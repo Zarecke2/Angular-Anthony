@@ -36,7 +36,6 @@ import { existsSync, readFileSync } from 'fs';
 import { connect as mongoConnect, ConnectOptions, connection as mongoConnection, Types } from 'mongoose';
 import routes_api from './libs/default-route'
 // import connectMongo from 'connect-mongo';
-import { enseignants_table } from 'libs/models/enseignant';
 
 const distFolder = process.cwd().indexOf('www') === -1 ? join(process.cwd(), 'www') : process.cwd();
 const domino = require('domino');
@@ -146,7 +145,7 @@ export function app() {
 function run() {
     const server = app().listen(process.argv[2] || 4000, () => {
         console.log(`Le serveur Express écoute sur http://localhost:${process.argv[2] || process.env['SERVER_PORT'] || 4000}`);
-        console.log(`Environnement ${process.env['SERVER_ENV']})`);
+        console.log(`Environnement ${process.env['SERVER_ENV']}`);
     });
 }
 

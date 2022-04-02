@@ -1,5 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Ue } from 'libs/models/ue';
+import { User } from 'libs/models/users';
 // import { rejects } from 'assert';
 // import { resolve } from 'dns';
 import { BehaviorSubject } from 'rxjs';
@@ -14,16 +16,19 @@ export class AuthService {
   private token: any = '';
   private userId: any = '';
   isAuth$ = new BehaviorSubject<boolean>(false);
-
+  
   constructor(private http: HttpClient) { }
 
-  test() {
-    return this.http.get<{message: string}>('/api/system/backend/test')
+  test(query?: {email: string, password: string}) {
+    return this.http.post<{user: User, ue: Ue}>('/api/system/backend/test', query)
   }
 
+  adminConnexion() {
+    
+  }
 
-
-  signin(email: string, password: string) {
+  signin(query: {email: string, password: string}) {
+    return this.http.post<{user: User, ue: Ue}>('/api/system/backend/signin', query)
     // return this.http.post<>(this.api + '/login', { email: email, password: password });
     // return new Promise((resolve, reject) => {
     //   this.http.post(this.api + '/login', { email: email, password: password }).subscribe(
