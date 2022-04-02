@@ -38,7 +38,7 @@ router.post('/test', (req, res, next) => {
                     user_name: "Anonyth",
                     email: req.body.email,
                     password: req.body.password,
-                    ues_inscrit: [{ 
+                    ues_inscrit: [{
                         ue: ues[0]?._id,
                         groupe_cm: 1,
                         groupe_td: 1,
