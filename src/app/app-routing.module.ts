@@ -10,6 +10,7 @@ const routes: Routes = [
   { path :'menu', component: MenuComponent},
   { path :'add-enseignant', component: AddEnseignantComponent},
   { path :'edit-enseignant/:id', component: EditEnseignantComponent},
+  //{ path :'notfound', component: NotFoundComponent},
   { path :'**', component: SigninComponent}
 
 

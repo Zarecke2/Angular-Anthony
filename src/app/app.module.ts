@@ -5,7 +5,8 @@ import { HttpClientModule } from '@angular/common/http'
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SigninComponent } from './components/auth/signin/signin.component';
-import { MenuComponent } from './components/menu/menu.component';
+
+
 import { AddEnseignantComponent } from './components/menu/add-enseignant/add-enseignant.component';
 import { EditEnseignantComponent } from './components/menu/edit-enseignant/edit-enseignant.component';
 import { HeaderComponent } from './components/partials/header/header.component';
@@ -14,7 +15,10 @@ import { NotFoundComponent } from './components/partials/not-found/not-found.com
 import { HeaderPageComponent } from './components/partials/header-page/header-page.component';
 import { QuickViewModalComponent } from './components/partials/modal/quick-view-modal/quick-view-modal.component';
 import { DeleteEnseignantModalComponent } from './components/partials/modal/delete-enseignant-modal/delete-enseignant-modal.component';
-import {FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormsModule ,ReactiveFormsModule, FormControl } from '@angular/forms';
+import { MenuComponent } from './components/menu/menu.component';
+import { MatTableModule } from '@angular/material/table'
+
 
 @NgModule({
   declarations: [
@@ -28,7 +32,7 @@ import {FormsModule, ReactiveFormsModule } from '@angular/forms';
     NotFoundComponent,
     HeaderPageComponent,
     QuickViewModalComponent,
-    DeleteEnseignantModalComponent
+    DeleteEnseignantModalComponent,
   ],
   imports: [
     BrowserModule,
@@ -36,6 +40,8 @@ import {FormsModule, ReactiveFormsModule } from '@angular/forms';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
+    MatTableModule,
+
 
   ],
   providers: [],

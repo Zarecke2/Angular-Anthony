@@ -67,4 +67,27 @@ router.post('/signin', (req, res, next) => {
     // })
 });
 
+router.get('/enseignants', (req, res, next) => {
+    user_table.find({}, (err, users) => {
+        if (err) {
+            console.log('err append', err);
+        } else if (!users?.length) {
+            return next(new Error('Pas due trouvées !!'))
+        } else {
+            res.send(users);
+        }
+    });
+})
+
+
+
+
+
+
+
+
+
 export default router;
+
+
+
