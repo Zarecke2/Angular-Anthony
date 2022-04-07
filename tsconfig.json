@@ -1,4 +1,3 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "compileOnSave": false,
   "compilerOptions": {
@@ -20,13 +19,14 @@
     ],
     "lib": [
       "es2018",
-      "dom",
-
+      "dom"
     ],
     "paths": {
+      "@coreui/angular": [
+        "dist/coreui/angular"
+      ],
       "core-js/es7/reflect": [
         "../node_modules/core-js/proposals/reflect-metadata"
-
       ]
     }
   },
@@ -34,8 +34,5 @@
     "fullTemplateTypeCheck": true,
     "strictInjectionParameters": true,
     "preserveWhitespaces": false
-
   }
-
-
 }

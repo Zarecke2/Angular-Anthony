@@ -1,0 +1,51 @@
+<app-header class="animated fadeIn" [fixed]="true" [navbarBrandRouterLink]="['/menu']"
+  [navbarBrandFull]="{src: 'assets/img/brand/logo.png', width: 89, height: 25, alt: 'Projet'}"
+  [navbarBrandMinimized]="{src: 'favicon.ico', width: 30, height: 30, alt: 'Build Analytics'}" [sidebarToggler]="'lg'"
+  [asideMenuToggler]="'lg'">
+  <ul class="nav navbar-nav ml-auto">
+    <li class="nav-item dropdown" dropdown placement="bottom right">
+      <a *ngIf="(facade.auth$ | async | pick:'i':'f':'l') as auth" class="nav-link" data-toggle="dropdown" href="#"
+        role="button" aria-haspopup="true" aria-expanded="false" dropdownToggle (click)="false">
+        <img src="assets/img/avatars/default.jpg" class="avatar avatar-16 bg-light rounded-circle z-depth-2"
+          alt="profil">
+
+        <small class="float-right text-left pl-1 pt-1 d-md-down-none"
+          style="line-height: 1.2;">{{profile?.first_name}}<br>{{profile?.last_name}}</small>
+      </a>
+      <div class="dropdown-menu dropdown-menu-right" *dropdownMenu aria-labelledby="simple-dropdown">
+        <div class="dropdown-header text-center"><strong>Mon compte</strong></div>
+        <a class="dropdown-item" routerLink="/account/profile"><i class="fas fa-user text-success"></i> Mon Profil</a>
+        <a class="dropdown-item" routerLink="/auth/login" (click)="facade.logout()"><i
+            class="fas fa-lock text-danger"></i> Se déconnecter</a>
+      </div>
+    </li>
+  </ul>
+</app-header>
+<div class="app-body">
+  <app-sidebar #appSidebar [fixed]="true" [display]="'lg'" [minimized]="sidebarMinimized"
+    (minimizedChange)="toggleMinimize($event)">
+    <app-sidebar-nav [navItems]="navItems" [perfectScrollbar] [disabled]="appSidebar.minimized"></app-sidebar-nav>
+    <app-sidebar-minimizer></app-sidebar-minimizer>
+  </app-sidebar>
+  <!-- Main content -->
+  <main class="main pt-2">
+    <div class="container-fluid">
+      <router-outlet></router-outlet>
+    </div><!-- /.container-fluid -->
+  </main>
+</div>
+<app-footer [fixed]="true" class="py-0">
+  <span style="line-height: 1;">
+    <!-- <span>&copy; 2020 Build Analytics</span><br>
+    <small><i>Version {{version}} ({{distribution?.name}})</i></small> -->
+  </span>
+  <span class="d-sm-down-none ml-2" style="line-height: 1; width:fit-content;">
+    <progressbar *ngIf="isLoading" class="progress-bar progress-bar-striped progress-bar-animated bg-primary px-4 py-3"
+      value="0" max="500" type="light">
+      Chargement des données
+    </progressbar>
+  </span>
+  <span class="ml-auto">
+    <!-- <a href="mailto:buildanalytics.fr@capgemini.com">Pôle Outillage</a> -->
+  </span>
+</app-footer>

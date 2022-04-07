@@ -1,24 +1,23 @@
 /***************************************************************************************************
  * Load `$localize` onto the global scope - used if i18n tags appear in Angular templates.
  */
- import '@angular/localize/init';
- /**
-  * *** NOTE ON IMPORTING FROM ANGULAR AND NGUNIVERSAL IN THIS FILE ***
-  *
-  * If your application uses third-party dependencies, you'll need to
-  * either use Webpack or the Angular CLI's `bundleDependencies` feature
-  * in order to adequately package them for use on the server without a
-  * node_modules directory.
-  *
-  * However, due to the nature of the CLI's `bundleDependencies`, importing
-  * Angular in this file will create a different instance of Angular than
-  * the version in the compiled application code. This leads to unavoidable
-  * conflicts. Therefore, please do not explicitly import from @angular or
-  * @nguniversal in this file. You can export any needed resources
-  * from your application's main.server.ts file, as seen below with the
-  * import for `ngExpressEngine`.
-  */
-
+import '@angular/localize/init';
+/**
+ * *** NOTE ON IMPORTING FROM ANGULAR AND NGUNIVERSAL IN THIS FILE ***
+ *
+ * If your application uses third-party dependencies, you'll need to
+ * either use Webpack or the Angular CLI's `bundleDependencies` feature
+ * in order to adequately package them for use on the server without a
+ * node_modules directory.
+ *
+ * However, due to the nature of the CLI's `bundleDependencies`, importing
+ * Angular in this file will create a different instance of Angular than
+ * the version in the compiled application code. This leads to unavoidable
+ * conflicts. Therefore, please do not explicitly import from @angular or
+ * @nguniversal in this file. You can export any needed resources
+ * from your application's main.server.ts file, as seen below with the
+ * import for `ngExpressEngine`.
+ */
 
 
 import 'zone.js/dist/zone-node';
@@ -26,32 +25,36 @@ import * as express from 'express';
 import * as session from 'express-session';
 import * as useragent from 'express-useragent';
 import * as cors from 'cors';
+import * as helmet from 'helmet';
+import * as nocache from 'nocache';
+// import * as crypto from 'crypto';
+import * as connectMongo from 'connect-mongo';
+import * as cookieParser from 'cookie-parser';
+import * as passport from 'passport';
 import { APP_BASE_HREF } from '@angular/common';
 require('dotenv').config();
 
 import { ngExpressEngine } from '@nguniversal/express-engine';
 import { join } from 'path';
 import { AppServerModule } from 'src/app/app.server.module';
-import { existsSync, readFileSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { connect as mongoConnect, ConnectOptions, connection as mongoConnection, Types } from 'mongoose';
 import routes_api from './libs/default-route'
-// import connectMongo from 'connect-mongo';
+
+import { LocalStorage } from 'node-localstorage';
+import { PASSPORTLOCAL } from 'libs/passport/passport-local';
+import { PASSPORTJWT } from 'libs/passport/passport-jwt';
 
 const distFolder = process.cwd().indexOf('www') === -1 ? join(process.cwd(), 'www') : process.cwd();
 const domino = require('domino');
-// const MongoStore = connectMongo(session)
+const MongoStore = connectMongo(session)
 
 export function app() {
     const server = express();
     const indexHtml = existsSync(join(distFolder, 'app/index.original.html')) ? 'index.original.html' : 'index';
     const template = readFileSync(join(distFolder, 'app/index.html')).toString();
     const window = domino.createWindow(template);
-    // const privateKEY = readFileSync(join(distFolder, 'config/private.pem'), 'utf8');
-
-    server.use(cors());
-    server.use(express.json({ limit: '50mb' }));
-    server.use(express.urlencoded({ extended: true }));
-    server.use(useragent.express());
+    const privateKEY = readFileSync(join(distFolder, 'config/private.pem'), 'utf8');
 
 
     const connectionOptions: ConnectOptions = {
@@ -84,38 +87,61 @@ export function app() {
     mongoConnection.on('open', () => {
 
     });
-    // server.use(['/api'], session({
-    //     saveUninitialized: true,
-    //     resave: false,
-    //     store: new MongoStore({
-    //       mongooseConnection: mongoConnection,
-    //       autoRemove: 'native',
-    //       ttl: 14 * 24 * 60 * 60 * 1000 // 14 jours
-    //     }),
-    //     secret: privateKEY,
-    //     name: 'bassl',
-    //     cookie: {
-    //       httpOnly: true,
-    //       secure: false,
-    //       signed: true,
-    //       encode: () => 'RS256',
-    //       path: '/',
-    //       sameSite: true,
-    //       maxAge: 14 * 24 * 60 * 60 * 1000 // 14 jours
-    //     }
-    //   }));
 
+
+    server.use(cors());
+    server.use(express.json({ limit: '50mb' }));
+    server.use(express.urlencoded({ extended: true }));
+    server.use(cookieParser(privateKEY));
+    server.use(useragent.express());
+    server.use(['/api'], session({
+        saveUninitialized: true,
+        resave: false,
+        store: new MongoStore({
+            mongooseConnection: mongoConnection,
+            autoRemove: 'native',
+            ttl: 14 * 24 * 60 * 60 * 1000 // 14 jours
+        }),
+        secret: privateKEY,
+        name: 'bassl',
+        cookie: {
+            httpOnly: true,
+            secure: false,
+            signed: true,
+            encode: () => 'RS256',
+            path: '/',
+            sameSite: true,
+            maxAge: 14 * 24 * 60 * 60 * 1000 // 14 jours
+        }
+    }));
+    server.use(passport.initialize());
+    server.use(['/api'], passport.session());
+    server.use(helmet());
+    server.use(helmet.referrerPolicy({ policy: 'no-referrer' }));
+    server.use(helmet.permittedCrossDomainPolicies());
+    server.use(helmet.hidePoweredBy());
+    server.use(nocache());
+    PASSPORTLOCAL(passport);
+    PASSPORTJWT(passport);
+    server.use('/public', express.static(join(distFolder, 'public'))); // ROUTE > PUBLIC
     server.use('/api/system', routes_api);
+    
+    
 
-    // global['localStorage'] = new LocalStorage('./scrach');
+    global['localStorage'] = new LocalStorage('./scrach');
     global['window'] = window;
     global['self'] = window;
     global['navigator'] = window.navigator;
     global['document'] = window.document;
     global['location'] = window.location;
+    global['gtag()'] = null;
+    global['lottie'] = null;
     global['onpopstate'] = window.onpopstate;
     global['history'] = window.history;
     global['getComputedStyle'] = window.getComputedStyle;
+    global['Event'] = null;
+    global['KeyboardEvent'] = null;
+
 
     server.engine('html', ngExpressEngine({
         bootstrap: AppServerModule
@@ -143,10 +169,25 @@ export function app() {
 }
 
 function run() {
+
     const server = app().listen(process.argv[2] || 4000, () => {
         console.log(`Le serveur Express écoute sur http://localhost:${process.argv[2] || process.env['SERVER_PORT'] || 4000}`);
         console.log(`Environnement ${process.env['SERVER_ENV']}`);
     });
+    // const keyPair = crypto.generateKeyPairSync('rsa', {
+    //     modulusLength: 4096,
+    //     publicKeyEncoding: {
+    //         type: 'pkcs1',
+    //         format: 'pem'
+    //     },
+    //     privateKeyEncoding: {
+    //         type: 'pkcs1',
+    //         format: 'pem'
+    //     }
+    // });
+    // writeFileSync(join(distFolder, 'config/public.pem'), keyPair.publicKey);
+    // writeFileSync(join(distFolder, 'config/private.pem'), keyPair.privateKey);
+
 }
 
 

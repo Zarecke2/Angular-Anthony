@@ -1,0 +1,43 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                Modifier mes informations
+            </div>
+            <div class="card-body">
+                <div class="modal-body" [formGroup]="enseignantForm">
+                    <div class="mb-3">
+                        <mat-label class="form-label">Prénom</mat-label>
+                        <input type="text" formControlName="first_name" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <mat-label class="form-label">Nom</mat-label>
+                        <input type="text" formControlName="last_name" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <mat-label class="form-label">Email</mat-label>
+                        <input type="email" formControlName="email" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <mat-label class="form-label">Status</mat-label>
+                        <mat-select class="form-select mb-3" formControlName="status">
+                            <mat-option *ngFor="let status of possible_status" [value]="status">{{ status }}</mat-option>
+                        </mat-select>
+                    </div>
+                    <div class="mb-3"  *ngIf="profile?.status !== 'VACATAIRE'">
+                        <mat-label class="form-label">UC</mat-label>
+                        <input type="number" step="0.5" [min]="0" formControlName="uc" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <mat-label class="form-label">Mot de passe</mat-label>
+                        <input type="password" formControlName="password" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-right">
+                <button type="button" (click)="confirmEditEnseignant();"
+                    class="btn btn-primary" [disabled]="!enseignantForm.valid">Modifier</button>
+            </div>
+        </div>
+    </div>
+</div>

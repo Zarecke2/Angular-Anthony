@@ -6,18 +6,16 @@ interface ue {
     "Formation"?: string;
     "Semestre"?: string;
     "Ref"?: string;
-    "Intitulé"?: string;
+    "Intitule"?: string;
     "Statut"?: string;
-    "h/CM"?: number;
-    "h/TD"?: number;
-    "h/TP"?: number;
+    "h_CM"?: number;
+    "h_TD"?: number;
+    "h_TP"?: number;
     "Effectif"?: number;
     "grCM"?: number;
     "grTD"?: number;
     "grTP"?: number;
-
 }
-
 
 export interface Ue extends ue, Document {
     _id?: string;
@@ -28,11 +26,11 @@ export const ues_schema = new Schema<Ue>({
     "Formation" : {type: String},
     "Semestre" : {type: String},
     "Ref" : {type: String},
-    "Intitulé" : {type: String},
+    "Intitule" : {type: String},
     "Statut" : {type: String},
-    "h/CM" : {type: Number},
-    "h/TD" : {type: Number},
-    "h/TP" : {type: Number},
+    "h_CM" : {type: Number},
+    "h_TD" : {type: Number},
+    "h_TP" : {type: Number},
     "Effectif" : {type: Number},
     "grCM" : {type: Number},
     "grTD" : {type: Number},
